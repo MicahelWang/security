@@ -1,10 +1,8 @@
 package com.example.security.entity;
 
 public class SysRole {
-    public SysRole() {
-    }
-
     private Long id;
+
     private String name;
 
     public Long getId() {
@@ -20,6 +18,6 @@ public class SysRole {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? null : name.trim();
     }
 }
