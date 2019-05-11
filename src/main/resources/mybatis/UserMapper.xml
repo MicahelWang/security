@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.security.mapper.UserMapper">
+    <resultMap type="com.example.security.entity.SysUser" id="userMap">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <!--
+        一对一
+        -->
+        <association property="department" javaType="com.example.security.entity.SysDepartment">
+            <id column="departmentId" property="id"/>
+            <result column="departmentName" property="name"/>
+        </association>
+        <!--一对多
+        -->
+        <collection property="roles" ofType="com.example.security.entity.SysRole">
+            <id column="roleId" property="id"/>
+            <result column="roleName" property="name"/>
+        </collection>
+    </resultMap>
+    <sql id="sqlBase">
+        SELECT
+	u.id,u.username,u.`password`, r.id as roleId,r.`name` as roleName, d.id AS departmentId,d.`name` as departmentName
+FROM
+	sys_user AS u
+LEFT JOIN sys_user_roles AS ur ON u.id = ur.userId
+LEFT JOIN sys_role AS r ON ur.roleId = r.id
+LEFT JOIN sys_department AS d ON u.departmentId = d.id
+    </sql>
+    <select id="getAll"  resultMap="userMap">
+        SELECT * FROM sys_user
+    </select>
+    <select id="getAllUserEntity" resultMap="userMap">
+        <include refid="sqlBase"></include>
+    </select>
+    <select id="getById"  resultMap="userMap" parameterType="Long">
+        <include refid="sqlBase"></include> WHERE u.id = #{id}
+    </select>
+    <select id="checkLogin"  resultMap="userMap">
+        <include refid="sqlBase"></include> WHERE u.username = #{username} and u.password = #{password}
+    </select>
+    <select id="getByUsername"  resultMap="userMap">
+        <include refid="sqlBase"></include> WHERE u.username = #{username}
+     </select>
+</mapper>
